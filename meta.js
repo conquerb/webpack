@@ -46,6 +46,13 @@ module.exports = {
       message: 'Project description',
       default: 'A Vue.js project',
     },
+    site: {
+      when: 'isNotTest',
+      type: 'string',
+      required: false,
+      message: '网站的域名',
+      default: 'http://www.111ji.com/',
+    },
     author: {
       when: 'isNotTest',
       type: 'string',
