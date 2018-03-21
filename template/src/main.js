@@ -1,26 +1,36 @@
-{{#if_eq build "standalone"}}
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-{{/if_eq}}
 import Vue from 'vue'
-import App from './App'
-{{#router}}
+import App from './App.vue'
 import router from './router'
-{{/router}}
 
-Vue.config.productionTip = false
+var cfsdk = require('careerforce-sdk');
+var utils = require("./js/utils");
+var api = require("./js/api");
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  {{#router}}
-  router,
-  {{/router}}
-  {{#if_eq build "runtime"}}
-  render: h => h(App)
-  {{/if_eq}}
-  {{#if_eq build "standalone"}}
-  components: { App },
-  template: '<App/>'
-  {{/if_eq}}
-})
+var config = require("./config");
+
+function initVue() {
+    new Vue({
+        el: '#app',
+        router,
+        template: '<App/>',
+        components: {
+            App
+        }
+    });
+}
+
+if (!utils.auth()) {
+    var wxLogin = new cfsdk.WXLOGIN();
+    try {
+        wxLogin.init(cfsdk, { wxid: config.wxid }).then(function(res) {
+            // console.log("auth success");
+            // console.log(res);
+            utils.setLogData(res);
+            document.location.href = document.location.protocol + "//" + document.location.host + document.location.pathname;
+        }, function(err) {
+            console.log(err);
+            initVue();
+        });
+    } catch (e) {}
+} else
+    initVue();
